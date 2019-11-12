@@ -1,0 +1,23 @@
+apply plugin: 'kotlin'
+def configs = rootProject.ext
+
+dependencies {
+
+    implementation configs.kotlin_std
+
+    // Unit Testing
+    testImplementation configs.junit
+    testImplementation configs.mockito_kotlin
+    testImplementation configs.google_truth
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}

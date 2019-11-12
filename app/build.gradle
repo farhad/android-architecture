@@ -1,35 +1,112 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'androidx.navigation.safeargs.kotlin'
+
+def configs = rootProject.ext
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    compileSdkVersion configs.compile_sdk_version
+
     defaultConfig {
         applicationId "io.upto"
-        minSdkVersion 22
-        targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        minSdkVersion configs.min_sdk_version
+        targetSdkVersion configs.target_sdk_version
+        versionCode configs.version_code
+        versionName configs.version_name
+        testInstrumentationRunner configs.android_instrumentation_runner
+
+        vectorDrawables.useSupportLibrary true
     }
+
+    sourceSets {
+        test.java.srcDirs += "$projectDir/src/shared/java"
+        androidTest.java.srcDirs += "$projectDir/src/shared/java"
+    }
+
     buildTypes {
-        release {
+
+        debug {
+            debuggable true
             minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+
+        }
+
+        release {
+            minifyEnabled true
+            zipAlignEnabled true
+            debuggable false
+            jniDebuggable false
+            shrinkResources true
+
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'androidx.core:core-ktx:1.0.2'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+
+    implementation project(':domain')
+
+    // Kotlin
+    implementation configs.kotlin_std
+    implementation configs.android_ktx
+
+    // Lifecycle and ViewModel
+    implementation configs.viewmodel
+    implementation configs.lifecycle_extensions
+
+    // Database
+    implementation configs.room_runtime
+    kapt configs.room_compiler
+
+    // Navigation
+    implementation configs.navigation_fragment_ktx
+
+    // Networking
+    implementation configs.retrofit
+    implementation configs.retrofit_gson_converter
+    implementation configs.retrofit_rxjava2_adapter
+    implementation configs.okhttp_logging_interceptor
+
+    // Android UI
+    implementation configs.appcompat
+    implementation configs.constraintlayout
+    implementation configs.material_components
+
+    // DI
+    implementation configs.dagger
+    implementation configs.dagger_android
+    implementation configs.dagger_android_support
+
+    kapt configs.dagger_compiler
+    kapt configs.dagger_android_processor
+
+    // Date and Time
+    implementation configs.three_ten_abp
+
+    // Image Loading
+    implementation configs.picasso
+
+    // RxJava
+    implementation configs.rxJava
+    implementation configs.rxAndroid
+
+    // Unit Testing
+    testImplementation configs.junit
+    testImplementation configs.mockito_kotlin
+    testImplementation configs.google_truth
+
+    // Instrumentation Testing
+    androidTestImplementation configs.google_truth
+    androidTestImplementation configs.android_test_runner
+    androidTestImplementation configs.android_junit_extentions
+    androidTestImplementation configs.android_espresso
+
+    // DI for Tests
+    kaptAndroidTest configs.dagger_compiler
+    kaptAndroidTest configs.dagger_android_processor
 }
